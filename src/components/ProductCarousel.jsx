@@ -1,14 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Plus, Minus } from 'lucide-react';
-
-const initialProducts = [
-  { id: 1, name: 'Bananas (1 kg)', price: 49, img: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?q=80&w=400&auto=format&fit=crop' },
-  { id: 2, name: 'Whole Wheat Bread', price: 39, img: 'https://images.unsplash.com/photo-1575505586569-646b2ca898fc?q=80&w=400&auto=format&fit=crop' },
-  { id: 3, name: 'Full Cream Milk (1L)', price: 62, img: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?q=80&w=400&auto=format&fit=crop' },
-  { id: 4, name: 'Potato Chips - Classic', price: 20, img: 'https://images.unsplash.com/photo-1599599810769-0ba3fd680f24?q=80&w=400&auto=format&fit=crop' },
-  { id: 5, name: 'Coca-Cola (1.25L)', price: 75, img: 'https://images.unsplash.com/photo-1629196904982-e5cf3e935ca1?q=80&w=400&auto=format&fit=crop' },
-  { id: 6, name: 'Farm Eggs (12 pc)', price: 89, img: 'https://images.unsplash.com/photo-1517959105821-eaf2591984b2?q=80&w=400&auto=format&fit=crop' },
-];
 
 const ProductCard = ({ product, qty, onAdd, onRemove }) => {
   return (
@@ -42,42 +33,22 @@ const ProductCard = ({ product, qty, onAdd, onRemove }) => {
   );
 };
 
-const ProductCarousel = ({ onCartChange }) => {
-  const [cart, setCart] = useState({});
-
-  const handleAdd = (id) => {
-    setCart((prev) => {
-      const next = { ...prev, [id]: (prev[id] || 0) + 1 };
-      onCartChange?.(Object.values(next).reduce((a, b) => a + b, 0));
-      return next;
-    });
-  };
-
-  const handleRemove = (id) => {
-    setCart((prev) => {
-      const qty = (prev[id] || 0) - 1;
-      const next = { ...prev };
-      if (qty <= 0) delete next[id]; else next[id] = qty;
-      onCartChange?.(Object.values(next).reduce((a, b) => a + b, 0));
-      return next;
-    });
-  };
-
+const ProductCarousel = ({ title = 'Popular near you', products = [], cart = {}, onAdd, onRemove }) => {
   return (
     <section className="py-6">
       <div className="mx-auto max-w-7xl px-4">
         <div className="mb-3 flex items-end justify-between">
-          <h2 className="text-xl font-bold tracking-tight text-gray-900">Popular near you</h2>
-          <button className="text-sm font-semibold text-lime-700 hover:text-lime-800">View more</button>
+          <h2 className="text-xl font-bold tracking-tight text-gray-900">{title}</h2>
+          <span className="text-sm font-semibold text-lime-700">{products.length} items</span>
         </div>
         <div className="no-scrollbar -mx-2 flex gap-4 overflow-x-auto px-2 pb-2">
-          {initialProducts.map((p) => (
+          {products.map((p) => (
             <ProductCard
               key={p.id}
               product={p}
-              qty={cart[p.id] || 0}
-              onAdd={() => handleAdd(p.id)}
-              onRemove={() => handleRemove(p.id)}
+              qty={cart[p.id]?.qty || 0}
+              onAdd={() => onAdd?.(p.id)}
+              onRemove={() => onRemove?.(p.id)}
             />
           ))}
         </div>
